@@ -1,0 +1,43 @@
+migration:
+  name: "Legacy Product to V2 Schema Migration"
+  description: "Migrates old catalog data to the strict V2 metadata format."
+  
+  # How to identify each record uniquely (for rollback/auditing)
+  primary_key: "item_sku"
+
+  rules:
+    # Direct mappings (old_col: new_col)
+    direct:
+      item_sku: sku
+      product_name: title
+      base_price: price
+      stock_count: inventory_level
+
+    # Default values for missing target fields
+    defaults:
+      currency: "USD"
+      status: "ACTIVE"
+
+    # Computed mappings logic
+    computed:
+      # Combine columns into a new one
+      - target: full_description
+        type: concat
+        sources: [brand_name, product_name, short_desc]
+        separator: " - "
+
+      # Cast string to float
+      - target: price
+        type: cast
+        source: base_price
+        to_type: float
+        
+      # Normalize categories
+      - target: category
+        type: map_values
+        source: dept
+        mapping:
+          "Elec": "Electronics"
+          "App": "Apparel"
+          "H&K": "Home & Kitchen"
+        default: "Other"
