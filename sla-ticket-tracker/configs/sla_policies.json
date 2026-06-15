@@ -1,0 +1,21 @@
+{
+    "policies": {
+        "SEV1": {
+            "limit_hours": 1,
+            "description": "Critical system down. Immediate resolution required."
+        },
+        "SEV2": {
+            "limit_hours": 4,
+            "description": "High impact issue. Resolution required within 4 hours."
+        },
+        "SEV3": {
+            "limit_hours": 24,
+            "description": "Medium impact issue. Resolution required within 1 business day."
+        },
+        "SEV4": {
+            "limit_hours": 168,
+            "description": "Low impact or feature request. Resolution required within 1 week."
+        }
+    },
+    "at_risk_threshold": 0.8
+}
