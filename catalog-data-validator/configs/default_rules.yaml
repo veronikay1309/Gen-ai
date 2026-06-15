@@ -1,0 +1,21 @@
+rules:
+  - type: completeness
+    name: check_completeness
+    severity: WARNING
+    params:
+      columns: [title, price, category]
+
+  - type: numeric_range
+    name: check_price_range
+    severity: WARNING
+    params:
+      ranges:
+        price:
+          min: 0.01
+          max: 10000.0
+
+  - type: duplicates
+    name: check_duplicates
+    severity: WARNING
+    params:
+      key_columns: [id]

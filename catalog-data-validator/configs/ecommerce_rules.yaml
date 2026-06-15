@@ -1,0 +1,41 @@
+rules:
+  - type: completeness
+    name: check_required_fields
+    severity: CRITICAL
+    params:
+      columns: [id, title, price, asin, category, stock]
+
+  - type: regex_format
+    name: check_asin_format
+    severity: CRITICAL
+    params:
+      patterns:
+        asin: "^B[A-Z0-9]{9}$"
+
+  - type: numeric_range
+    name: check_pricing_and_stock
+    severity: WARNING
+    params:
+      ranges:
+        price:
+          min: 0.01
+          max: 50000.0
+        stock:
+          min: 0
+
+  - type: duplicates
+    name: check_identity_duplicates
+    severity: CRITICAL
+    params:
+      key_columns: [id, asin]
+      fuzzy_column: title
+      fuzzy_threshold: 0.90
+      fuzzy_window: 5
+
+  - type: encoding
+    name: check_text_encoding
+    severity: WARNING
+    params:
+      columns: [title, description]
+      ascii_only: false
+      detect_mojibake: true
