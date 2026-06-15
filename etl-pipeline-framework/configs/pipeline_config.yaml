@@ -1,0 +1,45 @@
+pipeline:
+  name: "product-catalog-etl"
+  description: "Ingest product catalog CSV, clean and deduplicate, load into SQLite"
+
+  source:
+    type: csv
+    path: sample_data/raw_products.csv
+    encoding: utf-8
+
+  transformers:
+    - type: cleaner
+      params:
+        strip_whitespace: true
+        lowercase_columns: [category, brand]
+        drop_nulls_in: [id, title, price]
+
+    - type: deduplicator
+      params:
+        key_columns: [id]
+
+    - type: schema_mapper
+      params:
+        rename:
+          prod_id: id
+          prod_title: title
+          prod_price: price
+        keep_columns: [id, title, price, category, brand, stock, asin]
+
+  destination:
+    type: sqlite
+    path: output/catalog.db
+    table: products
+    if_exists: replace   # options: replace | append | upsert
+
+  retry:
+    max_attempts: 3
+    backoff_factor: 2     # seconds: 2, 4, 8
+
+  dead_letter:
+    enabled: true
+    path: dead_letter/
+
+  logging:
+    level: INFO
+    format: json
